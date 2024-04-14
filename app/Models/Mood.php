@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Mood extends Model
 {
     use HasFactory;
+    use HasUuids;
 
     public $timestamps = false;
 
@@ -22,6 +24,6 @@ class Mood extends Model
 
     public function mood()
     {
-        return $this->belongsTo(Travel::class);
+        return $this->belongsTo(Travel::class,'travelId');
     }
 }
