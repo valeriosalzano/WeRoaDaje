@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateTravelRequest extends FormRequest
 {
@@ -24,7 +25,12 @@ class UpdateTravelRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'visible' => 'boolean',
+            'name' => 'required|max:100',
+            'slug' => ['required','max:100',Rule::unique('travels')->ignore($this->travel)],
+            'description' => 'nullable|string',
+            'image' => 'nullable|url',
+            'numberOfDays' => 'numeric|min:1|digits_between:1,2'
         ];
     }
 }

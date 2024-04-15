@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class StoreTravelRequest extends FormRequest
 {
@@ -13,7 +14,15 @@ class StoreTravelRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return ;
+    }
+
+    // Generate slug before validation
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'slug' => $this->slug ?? Str::slug($this->name, '-'),
+        ]);
     }
 
     /**
@@ -24,7 +33,12 @@ class StoreTravelRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'visible' => 'boolean',
+            'name' => 'required|max:100',
+            'slug' => 'required|max:100|unique:travels',
+            'description' => 'nullable|string',
+            'image' => 'nullable|url',
+            'numberOfDays' => 'numeric|min:1|digits_between:1,2'
         ];
     }
 }

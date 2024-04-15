@@ -24,7 +24,11 @@ class StoreTourRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'travelId' => 'exists:travels,id',
+            'name' => 'required|max:14',
+            'startingDate' => 'required|date|after:today',
+            'endingDate' => 'required|date|after:startingDate',
+            'price' => 'numeric|min:0|digits_between:3,8'
         ];
     }
 }
