@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class Mood extends Model
 {
     use HasFactory;
-    use HasUuids;
 
     public $timestamps = false;
 
