@@ -14,7 +14,7 @@ class StoreTravelRequest extends FormRequest
      */
     public function authorize()
     {
-        return ;
+        return true ;
     }
 
     // Generate slug before validation
