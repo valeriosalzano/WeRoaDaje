@@ -12,6 +12,9 @@ class Mood extends Model
 
     public $timestamps = false;
 
+    protected $primaryKey = 'travelId';
+    public $incrementing = false;
+    
     protected $fillable = [
         'travelId',
         'nature',
@@ -21,7 +24,7 @@ class Mood extends Model
         'party'
     ];
 
-    public function mood()
+    public function travel()
     {
         return $this->belongsTo(Travel::class,'travelId');
     }

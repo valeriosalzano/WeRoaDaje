@@ -8,17 +8,17 @@ use App\Http\Requests\StoreTourRequest;
 use App\Models\Tour;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class TourController extends Controller
 {
-    use ApiHelpers;
 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index():JsonResponse
     {
         $products = Tour::all();
         return response()->json([
@@ -31,62 +31,16 @@ class TourController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(StoreTourRequest $request)
+    public function store(Request $request): JsonResponse
     {
-        $tour = Tour::create($request->all());
+        if(!$this->isAdmin($request->user())) return $this->onError(401, 'Unauthorized Access');
 
-        return response()->json([
-            'status' => true,
-            'message' => "Tour Created successfully!",
-            'tour' => $tour
-        ], 200);
-    }
+        $validated_data = $request->validated();
+        $newTour = Tour::create($validated_data);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Tour  $tour
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Tour $tour)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Tour  $tour
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Tour $tour)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Tour  $tour
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Tour $tour)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Tour  $tour
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Tour $tour)
-    {
-        //
+        return $this->onSuccess($newTour, 'Tour Created');
     }
 
     public function test(Request $request): JsonResponse
@@ -99,4 +53,5 @@ class TourController extends Controller
 
         return $this->onError(401, 'Unauthorized Access');
     }
+
 }

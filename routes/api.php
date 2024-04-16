@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\TourController;
+use App\Http\Controllers\Api\TravelController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,15 +16,23 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+//ADMIN ONLY
+Route::middleware(['auth:sanctum','ability:admin'])
+    ->group(function(){
+        Route::post('/tours', [TourController::class,'store']);
+        Route::post('/travels', [TravelController::class,'store']);
+    });
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+//EDITOR ONLY
+Route::middleware(['auth:sanctum','ability:editor,admin'])
+    ->group(function(){
+        Route::put('/travel/{travel:slug}',[TravelController::class,'update']);
+    });
 
-Route::group(['middleware'=>'auth:sanctum'], function(){
-    Route::get('test',[TourController::class,'test']);
-});
+//LOGIN (create token)
+Route::post('/login',[UserController::class,'store']);
+//LOGOUT (destroy tokens)
+Route::post('/logout',[UserController::class, 'destroy']);
 
-Route::post("login",[UserController::class,'index']);
-
-
+//PUBLIC
+Route::get('/tours',[TourController::class,'index']);

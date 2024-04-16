@@ -20,6 +20,7 @@ class TravelSeeder extends Seeder
 
         foreach($travels as $travel_){
             $travel = new Travel();
+            $travel->visible = true;
             $travel->id = $travel_->id;
             $travel->name = $travel_->name;
             $travel->slug = $travel_->slug;

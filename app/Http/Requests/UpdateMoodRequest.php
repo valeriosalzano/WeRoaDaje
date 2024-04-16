@@ -4,9 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
 
-class UpdateTravelRequest extends FormRequest
+class UpdateMoodRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +25,11 @@ class UpdateTravelRequest extends FormRequest
     public function rules()
     {
         return [
-            'visible' => 'boolean',
-            'name' => 'max:100',
-            'slug' => ['max:100',Rule::unique('travels','slug')->ignore($this->slug,'slug')],
-            'description' => 'nullable|string',
-            'image' => 'nullable|url',
-            'numberOfDays' => 'numeric|min:1|digits_between:1,2',
-            'moods' => 'array:nature,relax,history,culture,party'
+            "nature"=> 'required|numeric|min:0|max:100',
+            "relax"=> 'required|numeric|min:0|max:100',
+            "history"=> 'required|numeric|min:0|max:100',
+            "culture"=> 'required|numeric|min:0|max:100',
+            "party"=> 'required|numeric|min:0|max:100'
         ];
     }
 }

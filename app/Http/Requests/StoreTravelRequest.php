@@ -14,14 +14,14 @@ class StoreTravelRequest extends FormRequest
      */
     public function authorize()
     {
-        return true ;
+        return true;
     }
 
     // Generate slug before validation
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'slug' => $this->slug ?? Str::slug($this->name, '-'),
+            'slug' => $this->slug ?? Str::slug($this->name, '-')
         ]);
     }
 
@@ -38,7 +38,8 @@ class StoreTravelRequest extends FormRequest
             'slug' => 'required|max:100|unique:travels',
             'description' => 'nullable|string',
             'image' => 'nullable|url',
-            'numberOfDays' => 'numeric|min:1|digits_between:1,2'
+            'numberOfDays' => 'required|numeric|min:1|digits_between:1,2',
+            'moods' => 'array:nature,relax,history,culture,party'
         ];
     }
 }

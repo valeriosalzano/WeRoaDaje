@@ -23,12 +23,12 @@ class Travel extends Model
     ];
 
     public function tours() {
-        return $this->hasMany(Tour::class);
+        return $this->hasMany(Tour::class,'travelId');
     }
 
-    public function mood()
+    public function moods()
     {
-        return $this->hasOne(Mood::class);
+        return $this->hasOne(Mood::class,'travelId');
 
     }
 }
