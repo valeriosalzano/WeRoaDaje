@@ -25,7 +25,7 @@ class UpdateTourRequest extends FormRequest
     public function rules()
     {
         return [
-            'travelId' => 'exists:travels,id',
+            'travelId' => 'required|exists:travels,id',
             'name' => 'required|max:14',
             'startingDate' => 'required|date|after:today',
             'endingDate' => 'required|date|after:startingDate',

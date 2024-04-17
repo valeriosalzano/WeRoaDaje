@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('tours', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('name','14');
+            $table->string('name',14)->unique();
             $table->date('startingDate');
             $table->date('endingDate');
             $table->unsignedMediumInteger('price');

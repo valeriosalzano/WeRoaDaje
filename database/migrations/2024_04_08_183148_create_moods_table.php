@@ -14,14 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('moods', function (Blueprint $table) {
-            $table->uuid('travelId');
+            $table->uuid('travelId')->unique();
             $table->foreign('travelId')->references('id')->on('travels')->cascadeOnDelete();
             $table->unsignedTinyInteger('nature');
             $table->unsignedTinyInteger('relax');
             $table->unsignedTinyInteger('history');
             $table->unsignedTinyInteger('culture');
             $table->unsignedTinyInteger('party');
-            $table->index('travelId');
         });
     }
 
