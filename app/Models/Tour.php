@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,30 +25,31 @@ class Tour extends Model
         return $this->belongsTo(Travel::class,'travelId');
     }
 
-    static function byTravelSlug($query, $slug)
+    public function scopeByTravelSlug($query, $slug)
     {
         return $query->join('travels', 'tours.travelId','travels.id')->where('travels.slug',$slug);
     }
+
     // PRICE FILTERS
-    static function priceBetween($query, $minPrice = 0, $maxPrice = 1000000000)
+    public function scopeériceBetween($query, $minPrice = 0, $maxPrice = 1000000000)
     {
         return $query->whereBetween('price', [$minPrice*100, $maxPrice*100]);
     }
 
-    static function orderByPrice($query,$order)
+    public function scopeOrderByPrice($query,$order)
     {
         return $query->orderBy('price',$order);
     }
 
     // DATE FILTERS
-    static function dateFrom($query, $dateFrom)
+    public function scopeDateFrom($query, $dateFrom)
     {
-        return $query->where('starting_date', '>=', $dateFrom);
+        return $query->where('startingDate', '>=', $dateFrom);
     }
 
-    static function dateTo($query, $dateTo)
+    public function scopeDateTo($query, $dateTo)
     {
-        return $query->where('starting_date', '<=', $dateTo);
+        return $query->where('startingDate', '<=', $dateTo);
     }
 
 }

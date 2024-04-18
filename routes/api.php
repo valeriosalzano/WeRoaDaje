@@ -36,3 +36,4 @@ Route::post('/logout',[UserController::class, 'destroy']);
 
 //PUBLIC
 Route::get('/tours',[TourController::class,'index']);
+Route::get('/travel/{travel:slug}/tours',[TourController::class,'index']);

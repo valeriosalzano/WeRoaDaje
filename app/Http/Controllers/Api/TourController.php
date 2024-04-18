@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\StoreTourRequest;
 use App\Models\Tour;
+use App\Models\Travel;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -23,31 +25,35 @@ class TourController extends Controller
      */
     public function index(Request $request):JsonResponse
     {
+       
         $query = Tour::query();
 
-        if($request->filled('slug')){
-            $query = Tour::byTravelSlug($query,$request->query('slug'));
+        if($request->route('travel')){
+            try {
+                Travel::where('slug',$request->route('travel'))->firstOrFail();
+            } catch (ModelNotFoundException $e) {
+                return $this->onError(404,'Travel not found');
+            }
+            $query->byTravelSlug($request->route('travel'));
         }
 
         if($request->filled('dateFrom')){
-            $query = Tour::dateFrom($query, $request->query('dateFrom'));
+            $query->dateFrom($request->query('dateFrom'));
         }
 
         if($request->filled('dateTo')){
-            $query = Tour::dateFrom($query, $request->query('dateTo'));
+            $query->dateFrom($request->query('dateTo'));
         }
 
         if($request->filled('priceFrom') || $request->filled('priceTo')){
-            $query = Tour::priceBetween($query, $request->query('priceFrom') ?? 0, $request->query('priceTo') ?? 100000000);
+            $query->priceBetween($request->query('priceFrom') ?? 0, $request->query('priceTo') ?? 100000000);
         }
 
         if($request->filled('orderByPrice')){
-            $query = Tour::orderByPrice($query,$request->query('orderByPrice'));
+            $query->orderByPrice($request->query('orderByPrice'));
         }
 
-        
-
-        $tours = $query->orderBy('startingDate','asc')->get();
+        $tours = $query->orderBy('startingDate','asc')->paginate(3);
 
         return response()->json([
             'status' => true,

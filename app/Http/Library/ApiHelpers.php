@@ -23,7 +23,7 @@ trait ApiHelpers
         return false;
     }
 
-    protected function onSuccess($data, $message = '', int $code = 200): JsonResponse
+    protected function onSuccess($data, string $message = '', int $code = 200): JsonResponse
     {
         return response()->json([
             'success' => substr((string)$code,0,1) == '2',
