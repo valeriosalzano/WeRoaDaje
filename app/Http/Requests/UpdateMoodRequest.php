@@ -25,11 +25,12 @@ class UpdateMoodRequest extends FormRequest
     public function rules()
     {
         return [
-            "nature"=> 'required|numeric|min:0|max:100',
-            "relax"=> 'required|numeric|min:0|max:100',
-            "history"=> 'required|numeric|min:0|max:100',
-            "culture"=> 'required|numeric|min:0|max:100',
-            "party"=> 'required|numeric|min:0|max:100'
+            "travelId" => ['exists:travels,id',Rule::unique('moods','travelId')->ignore($this->travelId,'travelId')],
+            "nature"=> 'numeric|min:0|max:100',
+            "relax"=> 'numeric|min:0|max:100',
+            "history"=> 'numeric|min:0|max:100',
+            "culture"=> 'numeric|min:0|max:100',
+            "party"=> 'numeric|min:0|max:100'
         ];
     }
 }

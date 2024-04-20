@@ -34,10 +34,17 @@ trait ApiHelpers
 
     protected function onError(int $code, string $message = '', array $errors = []): JsonResponse
     {
+        if(empty($errors))
+        return response()->json([
+            'success' => substr((string)$code,0,1) == '2',
+            'message' => $message
+        ], $code);
+        else
         return response()->json([
             'success' => substr((string)$code,0,1) == '2',
             'message' => $message,
             'errors' => $errors
         ], $code);
     }
+
 }

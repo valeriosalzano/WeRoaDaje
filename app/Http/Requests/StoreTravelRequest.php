@@ -33,7 +33,6 @@ class StoreTravelRequest extends FormRequest
     public function rules()
     {
         return [
-            'visible' => 'boolean',
             'name' => 'required|max:100',
             'slug' => 'required|max:100|unique:travels',
             'description' => 'nullable|string',

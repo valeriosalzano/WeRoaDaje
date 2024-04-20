@@ -26,7 +26,6 @@ class UpdateTravelRequest extends FormRequest
     public function rules()
     {
         return [
-            'visible' => 'boolean',
             'name' => 'max:100',
             'slug' => ['max:100',Rule::unique('travels','slug')->ignore($this->slug,'slug')],
             'description' => 'nullable|string',

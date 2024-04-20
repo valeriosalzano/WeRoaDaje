@@ -25,6 +25,7 @@ class StoreMoodRequest extends FormRequest
     public function rules()
     {
         return [
+            "travelId" => 'unique|exists:travels,id',
             "nature"=> 'required|numeric|min:0|max:100',
             "relax"=> 'required|numeric|min:0|max:100',
             "history"=> 'required|numeric|min:0|max:100',

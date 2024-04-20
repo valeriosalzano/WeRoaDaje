@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Library\ApiHelpers;
 use App\Http\Requests\StoreTourRequest;
+use App\Http\Resources\TourResource;
 use App\Models\Tour;
 use App\Models\Travel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -53,12 +54,9 @@ class TourController extends Controller
             $query->orderByPrice($request->query('orderByPrice'));
         }
 
-        $tours = $query->orderBy('startingDate','asc')->paginate(3);
+        $tours = $query->orderBy('startingDate','asc')->paginate(2);
 
-        return response()->json([
-            'status' => true,
-            'tours' => $tours
-        ]);
+        return $this->onSuccess(TourResource::collection($tours),'Tours retrieved',200);
     }
 
     /**
@@ -81,5 +79,31 @@ class TourController extends Controller
             $errors = $err->validator->errors()->all();
             return $this->onError(422,'Tour Creation Failed',$errors);
         }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  string $name
+     * @return \Illuminate\Http\Response
+     */
+    public function show($name)
+    {
+        try
+        {
+            if($name == 'last'){
+                $tour = Tour::orderBy('created_by','desc')->first();
+            }
+
+            $tour = Tour::where('name',$name)->firstOrFail();
+
+            return $this->onSuccess($tour,'Tour found.',200);
+
+        }catch(ModelNotFoundException $ex)
+        {
+            return $this->onError(404,'Tour not found.');
+        }
+        
+        
     }
 }

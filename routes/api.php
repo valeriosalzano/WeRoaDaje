@@ -1,9 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\TourController;
 use App\Http\Controllers\Api\TravelController;
-use App\Http\Controllers\Api\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,23 +16,38 @@ use Illuminate\Support\Facades\Route;
 |
 */
 //ADMIN ONLY
-Route::middleware(['auth:sanctum','ability:admin'])
-    ->group(function(){
-        Route::post('/tours', [TourController::class,'store']);
-        Route::post('/travels', [TravelController::class,'store']);
+Route::middleware(['auth:sanctum', 'ability:admin'])
+    ->group(function () {
+        Route::apiResource('travels', TravelController::class)
+            ->only(['store', 'destroy']);
+        Route::apiResource('tours', TourController::class);
     });
 
-//EDITOR ONLY
-Route::middleware(['auth:sanctum','ability:editor,admin'])
-    ->group(function(){
-        Route::put('/travel/{travel:slug}',[TravelController::class,'update']);
+//EDITOR OR ADMIN ONLY
+Route::middleware(['auth:sanctum', 'ability:editor,admin'])
+    ->group(function () {
+        Route::apiResource('travels', TravelController::class)
+            ->only(['index', 'update', 'show'])
+            ->parameters(['travels'=>'travel:slug']);
+        Route::apiResource('tours', TourController::class)
+            ->except(['update', 'destroy'])
+            ->parameters(['tours'=>'tour:name']);;
     });
 
-//LOGIN (create token)
-Route::post('/login',[UserController::class,'store']);
-//LOGOUT (destroy tokens)
-Route::post('/logout',[UserController::class, 'destroy']);
+//TOKEN
+Route::name('token')
+    ->prefix('token')
+    ->group(function () {
+        Route::get('/', [TokenController::class, 'store']);
+        Route::delete('/', [TokenController::class, 'destroy']);
+    });
+
+
 
 //PUBLIC
-Route::get('/tours',[TourController::class,'index']);
-Route::get('/travel/{travel:slug}/tours',[TourController::class,'index']);
+Route::name('public')
+    ->group(function () {
+        Route::apiResource('tours', TourController::class)
+            ->only(['index', 'show']);
+        Route::get('/travels/{slug}/tours', [TourController::class, 'index']);
+    });

@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Tour extends Model
 {
     use HasFactory;
+    use HasUuids;
+
+    public $incrementing = false;
 
     protected $fillable = [
         'name',
@@ -31,7 +35,7 @@ class Tour extends Model
     }
 
     // PRICE FILTERS
-    public function scopeériceBetween($query, $minPrice = 0, $maxPrice = 1000000000)
+    public function scopePriceBetween($query, $minPrice = 0, $maxPrice = 1000000000)
     {
         return $query->whereBetween('price', [$minPrice*100, $maxPrice*100]);
     }
