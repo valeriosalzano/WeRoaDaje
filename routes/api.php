@@ -20,7 +20,10 @@ Route::middleware(['auth:sanctum', 'ability:admin'])
     ->group(function () {
         Route::apiResource('travels', TravelController::class)
             ->only(['store', 'destroy']);
-        Route::apiResource('tours', TourController::class);
+        Route::apiResource('tours', TourController::class)
+            ->only(['store']);
+        Route::apiResource('/travels/{slug}/tours', TourController::class)
+            ->only(['store']);
     });
 
 //EDITOR OR ADMIN ONLY
@@ -28,26 +31,23 @@ Route::middleware(['auth:sanctum', 'ability:editor,admin'])
     ->group(function () {
         Route::apiResource('travels', TravelController::class)
             ->only(['index', 'update', 'show'])
-            ->parameters(['travels'=>'travel:slug']);
+            ->parameters(['travels' => 'travel:slug']);
         Route::apiResource('tours', TourController::class)
-            ->except(['update', 'destroy'])
-            ->parameters(['tours'=>'tour:name']);;
+            ->only(['show'])
+            ->parameters(['tours' => 'tour:name']);
+        Route::apiResource('/travels/{slug}/tours', TourController::class)
+            ->only(['show'])
+            ->parameters(['tours' => 'tour:name']);
     });
 
 //TOKEN
-Route::name('token')
-    ->prefix('token')
-    ->group(function () {
-        Route::get('/', [TokenController::class, 'store']);
-        Route::delete('/', [TokenController::class, 'destroy']);
-    });
+Route::apiResource('token', TokenController::class)
+    ->only(['store', 'destroy']);
 
 
 
 //PUBLIC
-Route::name('public')
-    ->group(function () {
-        Route::apiResource('tours', TourController::class)
-            ->only(['index', 'show']);
-        Route::get('/travels/{slug}/tours', [TourController::class, 'index']);
-    });
+Route::apiResource('tours', TourController::class)
+    ->only(['index']);
+Route::apiResource('/travels/{slug}/tours', TourController::class)
+    ->only(['index']);

@@ -21,6 +21,7 @@ class TravelSeeder extends Seeder
         foreach($travels as $travel_){
             $travel = new Travel();
             $travel->id = $travel_->id;
+            $travel->isPublic = true;
             $travel->name = $travel_->name;
             $travel->slug = $travel_->slug;
             $travel->description = $travel_->description;

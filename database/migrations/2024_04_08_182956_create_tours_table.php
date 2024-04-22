@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('endingDate');
             $table->unsignedMediumInteger('price');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

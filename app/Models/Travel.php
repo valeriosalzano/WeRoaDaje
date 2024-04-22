@@ -17,6 +17,7 @@ class Travel extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'isPublic',
         'slug',
         'name',
         'description',

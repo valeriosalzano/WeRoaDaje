@@ -1,66 +1,125 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel API Application
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a Laravel API application designed to replicate part of the WeRoad(aje) API app. There are different API endpoints to create, update and retrieve travels or tours. Some of them are public, some private, as per assignment.
 
-## About Laravel
+## Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. [Introduction](#introduction)
+2. [Features](#features)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [API Endpoints](#api-endpoints)
+6. [Authentication](#authentication)
+7. [Testing](#testing)
+8. [Insights](#insights)
+9. [Special Thanks](#special-thanks)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Introduction
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The DB structure is based on the assignment instructions. 
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. A private (admin) endpoint to create new travels;
+2. A private (admin) endpoint to create new tours for a travel;
+3. A private (editor) endpoint to update a travel;
+4. A public (no auth) endpoint to get a list of paginated tours by the travel `slug` (e.g. all the tours of the travel `foo-bar`). Users can filter (search) the results by `priceFrom`, `priceTo`, `dateFrom` (from that `startingDate`) and `dateTo` (until that `startingDate`). User can sort the list by `price` asc and desc. They will **always** be sorted, after every additional user-provided filter, by `startingDate` asc.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+To install and run this application locally, follow these steps:
 
-## Laravel Sponsors
+1. Clone this repository to your local machine.
+2. Install Composer dependencies by running `composer install`.
+3. Configure your environment variables by creating a `.env` file. You can use the `.env.example` file as a template.
+4. Generate an application key by running `php artisan key:generate`.
+5. Migrate the database schema by running `php artisan migrate`. (I'm using MAMP to set up a local server environment but you can use whatever you like)
+6. Seed the database by running `php artisan db:seed`
+7. Run `php artisan serve`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
 
-### Premium Partners
+## Usage
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Once you have done all the steps you are ready to go. I'm using Postman to test the API endpoints described in this document. However, feel free to use any API testing tool of your choice.
+It is possible to retrieve all the routes by running `php artisan route:list --path=api`. The path will retrieve all the API routes, leaving aside the others.
 
-## Contributing
+## API Endpoints
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Endpoints that requires authentication but no specific role:
 
-## Code of Conduct
+- **POST** `/api/token`: Create a new token AKA Login.
+- **DELETE** `/api/token`: Delete a token AKA Logout.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. Only ADMIN endpoints:
 
-## Security Vulnerabilities
+- **POST** `/api/travels`: Create a new travel.
+- **DELETE** `/api/travels/{travel}`: (Soft)Delete a specific travel.
+- **POST** `/api/travels/{slug}/tours`: Create a new tour within a specific travel. 
+- **POST** `/api/tours`: Create a new tour.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. Only EDITOR|ADMIN endpoints:
 
-## License
+- **GET|HEAD** `/api/travels`: Retrieve a list of travels.
+- **GET|HEAD** `/api/travels/{travel}`: Retrieve a specific travel.
+- **PUT|PATCH** `/api/travels/{travel}`: Update a specific travel.
+- **GET|HEAD** `/api/travels/{slug}/tours/{tour}`: Retrieve a specific tour within a specific travel.
+- **GET|HEAD** `/api/tours/{tour}`: Retrieve a specific tour.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+4. Public endpoints:
+
+- **GET|HEAD** `/api/tours`: Retrieve a list of tours.
+- **GET|HEAD** `/api/travels/{slug}/tours`: Retrieve a list of tours within a specific travel.
+
+## Authentication
+
+I used Laravel Sanctum. The App is authenticating the User with Bearer Tokens generated by Laravel, with "abilities", determining what a User can do, based on the role.
+A registered User has only one role (admin|editor|subscriber), whenever the user asks for a token, it will be generated saving the user role abilities.
+
+Here the steps:
+1. Make a POST request to `/api/token` to get a token, including a JSON object with "email" and "password"(take a look at UserSeeder for credentials). The App will answer with a "logged in as ..." message, including the Bearer Token.
+2. Save it in the header as "Authorization"->"Bearer Token"
+3. Have fun testing the API endpoints!
+
+## Testing
+
+Tests were made using PHPunit and they covers the required features.
+
+1. **Test for Creating New Travels (Admin Endpoint)**:
+   - Test that an authenticated admin user can successfully create a new travel.
+   - Test that a non-admin user cannot access the endpoint to create a new travel.
+   - Test that all required fields are validated and errors are returned for missing or invalid data.
+
+2. **Test for Creating New Tours for a Travel (Admin Endpoint)**:
+   - Test that an authenticated admin user can successfully create a new tour for an existing travel.
+   - Test that a non-admin user cannot access the endpoint to create a new tour.
+   - Test that the tour is correctly associated with the specified travel.
+   - Test that all required fields are validated and errors are returned for missing or invalid data.
+
+3. **Test for Updating a Travel (Editor|Admin Endpoint)**:
+   - Test that an authenticated editor user can successfully update an existing travel.
+   - Test that a non-editor user cannot access the endpoint to update a travel.
+
+4. **Test for Retrieving Paginated Tours by Travel Slug (Public Endpoint)**:
+   - Test that a user can retrieve a list of paginated tours by providing the travel slug.
+   - Test that the list is sorted by `startingDate` in ascending order by default.
+   - Test that the list can be sorted by `price` in ascending and descending order.
+   - Test that the list can be filtered by `priceFrom`, `priceTo`, `dateFrom`, and `dateTo`, and that only tours within the specified price and date range are returned.
+
+All the tests can be run using
+
+```bash
+php artisan test
+```
+
+## Insights
+
+1-to-1 relationship between Travel and Mood instead of many-to-many as the mood set is always the same and is never filled partially.
+
+Tours name are unique, so to have unique keys to send to frontEnd for dynamic generation (see more below in the response data).
+
+In public routes Resources were used to manipulate keys, so to hide some informations and the DB structure. Uuids won't be delivered in the endpoint but travel "slug" and tour "name" can be used in requests to get all the data without issues.
+
+## Special Thanks
+
+Thank you AI because you're so good at helping me coding and writing documentation <3.
+Thank you, WeRoad, because I enjoyed it, **really** (don't mind the blood on my head and on the keyboard, it is part of the fun.)

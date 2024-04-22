@@ -15,14 +15,20 @@ class TravelResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'isPublic' => $this->deleted_at ? false : true,
             'name' => $this->name,
             'slug' => $this->slug,
             'name' => $this->name,
             'description' => $this->description,
             'numberOfDays' => $this->numberOfDays,
+            'numberOfNights' => $this->numberOfDays >= 1 ? $this->numberOfDays - 1 : 0,
             'image' => $this->image,
-            'moods' => $this->mood
+            'moods' => [
+                'nature' => $this->mood->nature,
+                'relax' => $this->mood->relax,
+                'history' => $this->mood->history,
+                'culture' => $this->mood->culture,
+                'party' => $this->mood->party
+            ]
         ];
     }
 }

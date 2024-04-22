@@ -32,12 +32,14 @@ class TravelController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        if($request->user()->tokenCan('admin'))
-            $travels = Travel::with('mood')->withTrashed()->get();
-
-        $travels = Travel::with('mood')->get();
-
-        return $this->onSuccess(TravelResource::collection($travels), 'Travels retrieved', 200);
+        $query = Travel::query()->with('mood');
+        if ($request->user()->tokenCan('admin')) {
+            $travels = $query->withTrashed()->get();
+            return $this->onSuccess($travels, 'Travels retrieved', 200);
+        } else {
+            $travels = $query->get();
+            return $this->onSuccess(TravelResource::collection($travels), 'Travels retrieved', 200);
+        }
     }
 
     /**

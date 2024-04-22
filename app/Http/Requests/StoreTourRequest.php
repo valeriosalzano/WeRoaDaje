@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Tour;
+use App\Models\Travel;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTourRequest extends FormRequest
@@ -32,8 +33,15 @@ class StoreTourRequest extends FormRequest
         }
 
         $this->merge([
-            'name' => $newName
+            'name' => strtoupper($newName)
         ]);
+
+        if($this->slug && !$this->travelId){
+            $travel = Travel::where('slug',$this->slug)->first();
+            $this->merge([
+                'travelId' => $travel->id
+            ]);
+        }
     }
 
     /**
@@ -44,7 +52,8 @@ class StoreTourRequest extends FormRequest
     public function rules()
     {
         return [
-            'travelId' => 'required|exists:travels,id',
+            'slug' => 'string|exists:travels,slug',
+            'travelId' => 'required|uuid|exists:travels,id',
             'name' => 'required|max:14|uppercase|unique:tours',
             'startingDate' => 'required|date|after:today',
             'endingDate' => 'required|date|after:startingDate',

@@ -11,6 +11,7 @@ use App\Models\Travel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -24,39 +25,43 @@ class TourController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request):JsonResponse
+    public function index(Request $request): JsonResponse
     {
-       
-        $query = Tour::query();
 
-        if($request->route('travel')){
+        $query = Tour::query()->with('travel');
+
+        if ($request->route('slug')) {
+
             try {
-                Travel::where('slug',$request->route('travel'))->firstOrFail();
+                $travel = Travel::where('slug', $request->route('slug'))->where('isPublic',true)->firstOrFail();
             } catch (ModelNotFoundException $e) {
-                return $this->onError(404,'Travel not found');
+                return $this->onError(404, 'Travel not found');
             }
-            $query->byTravelSlug($request->route('travel'));
+
+            $query->byTravelId($travel->id);
         }
 
-        if($request->filled('dateFrom')){
+        if ($request->filled('dateFrom')) {
             $query->dateFrom($request->query('dateFrom'));
         }
 
-        if($request->filled('dateTo')){
-            $query->dateFrom($request->query('dateTo'));
+        if ($request->filled('dateTo')) {
+            $query->dateTo($request->query('dateTo'));
         }
 
-        if($request->filled('priceFrom') || $request->filled('priceTo')){
+        if ($request->filled('priceFrom') || $request->filled('priceTo')) {
             $query->priceBetween($request->query('priceFrom') ?? 0, $request->query('priceTo') ?? 100000000);
         }
 
-        if($request->filled('orderByPrice')){
+        if ($request->filled('orderByPrice')) {
             $query->orderByPrice($request->query('orderByPrice'));
         }
 
-        $tours = $query->orderBy('startingDate','asc')->paginate(2);
+        $tours = $query->orderBy('startingDate', 'asc')->paginate(4);
 
-        return $this->onSuccess(TourResource::collection($tours),'Tours retrieved',200);
+        $tours->data = TourResource::collection($tours);
+
+        return $this->onSuccess($tours, 'Tours retrieved', 200);
     }
 
     /**
@@ -67,17 +72,14 @@ class TourController extends Controller
      */
     public function store(StoreTourRequest $request): JsonResponse
     {
-        try
-        {
+        try {
             $validated = $request->validated();
             $newTour = Tour::create($validated);
 
-            return $this->onSuccess($newTour,'Tour Created');
-
-        } catch (ValidationException $err)
-        {
+            return $this->onSuccess($newTour, 'Tour Created', 201);
+        } catch (ValidationException $err) {
             $errors = $err->validator->errors()->all();
-            return $this->onError(422,'Tour Creation Failed',$errors);
+            return $this->onError(422, 'Tour Creation Failed', $errors);
         }
     }
 
@@ -89,21 +91,16 @@ class TourController extends Controller
      */
     public function show($name)
     {
-        try
-        {
-            if($name == 'last'){
-                $tour = Tour::orderBy('created_by','desc')->first();
+        try {
+            if ($name == 'last') {
+                $tour = Tour::orderBy('created_by', 'desc')->first();
             }
 
-            $tour = Tour::where('name',$name)->firstOrFail();
+            $tour = Tour::where('name', $name)->firstOrFail();
 
-            return $this->onSuccess($tour,'Tour found.',200);
-
-        }catch(ModelNotFoundException $ex)
-        {
-            return $this->onError(404,'Tour not found.');
+            return $this->onSuccess($tour, 'Tour found.', 200);
+        } catch (ModelNotFoundException $ex) {
+            return $this->onError(404, 'Tour not found.');
         }
-        
-        
     }
 }

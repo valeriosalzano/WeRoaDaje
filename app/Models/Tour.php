@@ -5,15 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tour extends Model
 {
     use HasFactory;
     use HasUuids;
+    use SoftDeletes;
 
     public $incrementing = false;
 
     protected $fillable = [
+        'travelId',
         'name',
         'startingDate',
         'endingDate',
@@ -29,9 +32,9 @@ class Tour extends Model
         return $this->belongsTo(Travel::class,'travelId');
     }
 
-    public function scopeByTravelSlug($query, $slug)
+    public function scopeByTravelId($query, $travelId)
     {
-        return $query->join('travels', 'tours.travelId','travels.id')->where('travels.slug',$slug);
+        return $query->where('travelId',$travelId);
     }
 
     // PRICE FILTERS
