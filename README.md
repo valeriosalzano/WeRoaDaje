@@ -14,10 +14,6 @@ This is a Laravel API application designed to replicate part of the WeRoad(aje) 
 8. [Insights](#insights)
 9. [Special Thanks](#special-thanks)
 
-## Introduction
-
-The DB structure is based on the assignment instructions. 
-
 ## Features
 
 1. A private (admin) endpoint to create new travels;
